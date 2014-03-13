@@ -1,0 +1,90 @@
+// Anton Stoytchev
+// 05/10/2013
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.Random;
+
+public class Server {
+	private ServerSocket ServerSock;
+	private Thread t1;
+
+		//Create the server socket
+		public Server() {
+			try {
+				ServerSock = new ServerSocket(12345);
+				while(true){ //While the sever is up always accept new connections
+					Socket ClientSocket = ServerSock.accept();
+					new Thread(new ClientConnection(ClientSocket)).start(); //Create a new thread for each client
+				}						
+			}catch (IOException e){
+				System.out.println("Problem with port #12345");
+				System.exit(0);
+			}
+		}
+		
+//Creates a runnable class to handle each client connection
+public class ClientConnection implements Runnable{
+		private Socket ClientSocket;
+		private BufferedReader fromClient;
+		private PrintWriter toClient;
+		
+		public ClientConnection(Socket sock){
+			this.ClientSocket = sock;
+		}
+		
+		@SuppressWarnings("deprecation")
+		public void run() {
+				try {
+					fromClient = new BufferedReader(
+							new InputStreamReader(ClientSocket.getInputStream()));
+					toClient = new PrintWriter(ClientSocket.getOutputStream(), true);
+					String b = fromClient.readLine(); //read string from client
+					t1 = new Thread(new getProbablePrime(b, toClient)); // Create the genPrime thread
+					t1.start(); //start the genPrime thread
+					
+					String ClMessage = fromClient.readLine();
+					if (ClMessage.equals("cancle")){
+						System.out.println("Cancel Message Recieved");
+						t1.stop(); //kill the genPrime thread
+						ClientSocket.close();
+					}else if (ClMessage.equals("Close Connection")){
+						System.out.println("Client Recieved Big Integer");
+						ClientSocket.close();
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					System.out.println("Can't start getProbablePrime thread");
+					e.printStackTrace();				
+				}
+			}			
+		}
+	
+	//Create a runnable class to get the prime
+	class getProbablePrime implements Runnable{
+		private String		   b;
+		private PrintWriter	   toClient;
+		
+		public getProbablePrime(String b, PrintWriter pW){
+			this.b	 		  = b;
+			this.toClient     = pW;
+		}
+
+		@Override
+		public void run() {
+			int bits = Integer.parseInt(b);
+			BigInteger p = BigInteger.probablePrime(bits, new Random());
+			toClient.println(p);
+		}
+	}
+	
+	//main method for the server
+	public static void main(String [] args) throws IOException{
+		Server server = new Server();
+		}
+}
