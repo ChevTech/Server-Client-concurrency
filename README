@@ -7,30 +7,18 @@ The Client GUI is designed to remain active while jobs are performing using Thre
 
 The Client side program is designed using three classes:
  
-	1. ControlPanel - Handles any controls necessary
-	
-	2. ClientGUI    - Generates what the user sees
-	
-	3. Client       - Combines both classes ControlPanel and ClientGUI and creates the JFrame
-
-
-
+  1. ControlPanel - Handles any controls necessary
+  2. ClientGUI    - Generates what the user sees
+  3. Client       - Combines both classes ControlPanel and ClientGUI and creates the JFrame
+  
 To use:
 	
-
 1.) Run the server
-	
 2.) Run the client
-
-	3.) Find out the server's IP by running ifconfig in the Linux terminal on the computer that the server is running on.
-    
-		Note: use the inet address.
-	
+3.) Find out the server's IP by running ifconfig in the Linux terminal on the computer that the server is running on.
+	Note: use the inet address.
 4.) Input the IP into the IP-Address box, set a bit-length for an integer and press GenPrime.
-    
-		Note: Integers with bit-length greater than 5000 take some time to generate.
-
-
+  	Note: Integers with bit-length greater than 5000 take some time to generate.
 
 Designed by Anton Stoytchev
 
